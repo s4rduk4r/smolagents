@@ -655,6 +655,14 @@ class TransformersModel(Model):
             logger.warning(
                 f"`max_new_tokens` not provided, using this default value for `max_new_tokens`: {default_max_tokens}"
             )
+        try:
+            quantization_config = kwargs.pop("quantization_config")
+        except KeyError:
+            quantization_config = None
+        try:
+            attn_implementation = kwargs.pop("attn_implementation")
+        except KeyError:
+            attn_implementation = None
         self.kwargs = kwargs
 
         if device_map is None:
@@ -667,6 +675,8 @@ class TransformersModel(Model):
                 device_map=device_map,
                 torch_dtype=torch_dtype,
                 trust_remote_code=trust_remote_code,
+                quantization_config=quantization_config,
+                attn_implementation=attn_implementation
             )
             self.tokenizer = AutoTokenizer.from_pretrained(model_id)
         except ValueError as e:
